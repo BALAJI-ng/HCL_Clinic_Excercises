@@ -1,0 +1,224 @@
+<div class="clinic-outcomes-container">
+  <div class="header-section">
+    <!-- Top row with title and print button -->
+    <div class="header-top">
+      <h2>Clinic Outcomes</h2>
+      
+      <button class="print-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 9V2h12v7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Print
+      </button>
+    </div>
+    
+    <!-- Time period selector on second row, left-aligned -->
+    <div class="time-period-selector">
+      <button 
+        class="period-btn"
+        [class.active]="(selectedPeriod$ | async) === 30"
+        (click)="onPeriodChange(30)"
+      >
+        30 days
+      </button>
+      <button 
+        class="period-btn"
+        [class.active]="(selectedPeriod$ | async) === 60"
+        (click)="onPeriodChange(60)"
+      >
+        60 days
+      </button>
+      <button 
+        class="period-btn"
+        [class.active]="(selectedPeriod$ | async) === 90"
+        (click)="onPeriodChange(90)"
+      >
+        90 days
+      </button>
+    </div>
+  </div>
+
+  <!-- Patient count and date range info -->
+  <div class="info-section">
+    <p class="patient-info">
+      Showing {{ patientCount$ | async }} patients from last {{ selectedPeriod$ | async }} days of available data from {{ (dateRange$ | async)?.start }} - {{ (dateRange$ | async)?.end }}
+    </p>
+    <p class="disclaimer">
+      Only patients with a minimum of 10 days of SG data are included. Last updated on {{ lastUpdated$ | async }}
+    </p>
+  </div>
+
+  <div class="charts-grid">
+    <!-- Time in Range Section -->
+    <section class="time-in-range-section">
+      <div class="section-header">
+        <h3>Time in range</h3>
+        <div class="info-icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="#6B7280"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12 16v-4"
+              stroke="#6B7280"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M12 8h.01"
+              stroke="#6B7280"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div class="tooltip">
+            Based on standard of care ranges for Time in range.
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="timeInRange$ | async as data">
+        <div *ngIf="data" class="time-in-range-content">
+          <!-- Vertical stacked bar chart -->
+          <div class="chart-area">
+            <div class="vertical-bar-container">
+              <div class="vertical-bar">
+                <!-- Very High segment (top) - Yellow/Gold -->
+                <div
+                  *ngIf="data.veryHigh && data.veryHigh > 0"
+                  class="bar-segment very-high"
+                  [style.height.%]="data.veryHigh"
+                  title="Very High: {{ data.veryHigh }}%"
+                >
+                  <span class="percentage-label">{{ data.veryHigh }}%</span>
+                </div>
+                <!-- High segment - Orange with stripes -->
+                <div
+                  *ngIf="data.high && data.high > 0"
+                  class="bar-segment high"
+                  [style.height.%]="data.high"
+                  title="High: {{ data.high }}%"
+                >
+                  <span class="percentage-label">{{ data.high }}%</span>
+                </div>
+                <!-- In range segment (middle) - Green -->
+                <div
+                  *ngIf="data.inRange && data.inRange > 0"
+                  class="bar-segment in-range"
+                  [style.height.%]="data.inRange"
+                  title="In Range: {{ data.inRange }}%"
+                >
+                  <span class="percentage-label large"
+                    >{{ data.inRange }}%</span
+                  >
+                </div>
+                <!-- Low segment - Red with stripes -->
+                <div
+                  *ngIf="data.low && data.low > 0"
+                  class="bar-segment low"
+                  [style.height.%]="data.low"
+                  title="Low: {{ data.low }}%"
+                >
+                  <span class="percentage-label">{{ data.low }}%</span>
+                </div>
+                <!-- Very Low segment (bottom) - Dark Red -->
+                <div
+                  *ngIf="data.veryLow && data.veryLow > 0"
+                  class="bar-segment very-low"
+                  [style.height.%]="data.veryLow"
+                  title="Very Low: {{ data.veryLow }}%"
+                >
+                  <span class="percentage-label">{{ data.veryLow }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scale indicators at bottom -->
+          <div class="scale-container">
+            <div class="scale-markers">
+              <span class="scale-marker">40</span>
+              <span class="scale-marker">54</span>
+              <span class="scale-marker">70</span>
+              <span class="scale-marker">180</span>
+              <span class="scale-marker">240</span>
+              <span class="scale-marker">400</span>
+            </div>
+            <!-- Horizontal color scale bar -->
+            <div class="horizontal-scale-bar">
+              <div class="scale-segment very-low-scale"></div>
+              <div class="scale-segment low-scale"></div>
+              <div class="scale-segment in-range-scale"></div>
+              <div class="scale-segment high-scale"></div>
+              <div class="scale-segment very-high-scale"></div>
+            </div>
+
+            <!-- Scale markers -->
+
+            <div class="scale-label">mg/dL</div>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- GMI Section -->
+    <section class="gmi-section">
+      <h3>Glucose Management Indicator (GMI)</h3>
+
+      <ng-container *ngIf="gmi$ | async as gmi">
+        <div *ngIf="gmi" class="gmi-content">
+          <div class="gmi-average">
+            <div class="average-label">AVERAGE GMI</div>
+            <div class="average-value">{{ gmi.averageGMI }}%</div>
+          </div>
+
+          <div class="gmi-chart-container">
+            <ngx-charts-pie-chart
+              [results]="[
+                { name: gmi['<7'] + '%', value: gmi['<7'] },
+                { name: gmi['7-8'] + '%', value: gmi['7-8'] },
+                { name: gmi['>=8'] + '%', value: gmi['>=8'] }
+              ]"
+              [view]="[400, 400]"
+              [scheme]="gmiColorScheme"
+              [labels]="true"
+              [explodeSlices]="false"
+              [doughnut]="false"
+              [legend]="false"
+            >
+            </ngx-charts-pie-chart>
+
+            <!-- Scale bar matching screenshot -->
+            <div class="gmi-scale">
+              <div class="scale-markers">
+                <span class="scale-marker">≤7%</span>
+                <span class="scale-marker">7-8%</span>
+                <span class="scale-marker">≥8%</span>
+              </div>
+              <div class="scale-bar">
+                <div class="scale-section gmi-green" style="flex: 1"></div>
+                <div class="scale-section gmi-yellow" style="flex: 1"></div>
+                <div class="scale-section gmi-red" style="flex: 1"></div>
+              </div>
+
+              <div class="scale-label">GMI (%)</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+</div>
