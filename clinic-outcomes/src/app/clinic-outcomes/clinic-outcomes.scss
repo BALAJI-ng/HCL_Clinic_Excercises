@@ -1,0 +1,550 @@
+.clinic-outcomes-container {
+  padding: 20px;
+  background: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  // Header section with controls
+  .header-section {
+    margin-bottom: 20px;
+
+    // Top row with title and print button
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      color: #333;
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    // Period selector on its own row, left-aligned
+    .time-period-selector {
+      display: flex;
+      border: 1px solid #e0e0e0;
+      border-radius: 25px;
+      overflow: hidden;
+      background: white;
+      width: fit-content; // Only as wide as needed
+
+      .period-btn {
+        padding: 8px 20px;
+        border: none;
+        background: white;
+        color: #666;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+
+        &.active {
+          background: #4285f4;
+          color: white;
+        }
+
+        &:hover:not(.active) {
+          background: #f5f5f5;
+        }
+
+        &:first-child {
+          border-radius: 25px 0 0 25px;
+        }
+
+        &:last-child {
+          border-radius: 0 25px 25px 0;
+        }
+      }
+    }
+
+    .print-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid #4285f4;
+      border-radius: 20px;
+      background: white;
+      color: #4285f4;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #4285f4;
+        color: white;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  // Info section with patient count and timestamps
+  .info-section {
+    margin-bottom: 30px;
+
+    .patient-info {
+      margin: 0 0 8px 0;
+      color: #333;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .disclaimer {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+      font-style: italic;
+    }
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Time in Range Section */
+.time-in-range-section {
+  background: white;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 550px;
+  display: flex;
+  flex-direction: column;
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+
+    h3 {
+      margin: 0;
+      color: #333;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .info-icon {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+      position: relative;
+
+      &:hover {
+        background-color: #f3f4f6;
+
+        svg {
+          circle, path {
+            stroke: #4F46E5;
+          }
+        }
+
+        .tooltip {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+
+      svg {
+        transition: all 0.2s ease;
+      }
+
+      .tooltip {
+        visibility: hidden;
+        opacity: 0;
+        background-color: white;
+        color: #374151;
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px 12px;
+        position: absolute;
+        z-index: 1000;
+        bottom: 125%;
+        right: 0;
+        margin-bottom: 5px;
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+
+        &::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          right: 12px;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: white transparent transparent transparent;
+        }
+      }
+    }
+  }
+
+  .time-in-range-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-area {
+    margin-bottom: 40px;
+  }
+
+  .vertical-bar-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 300px;
+    margin-bottom: 0;
+  }
+
+  .vertical-bar {
+    display: flex;
+    flex-direction: column;
+    width: 60px;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .bar-segment {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    min-height: 5px;
+
+    .percentage-label {
+      position: absolute;
+      right: -40px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      z-index: 10;
+      
+      &.large {
+        font-size: 16px;
+        font-weight: 700;
+        right: -45px;
+      }
+    }
+
+    // Color scheme matching the design
+    &.very-low {
+      background: #dc2626; // Dark red
+    }
+
+    &.low {
+      background: #dc2626; // Red with stripes
+      background-image: repeating-linear-gradient(
+        45deg,
+        #dc2626 0px,
+        #dc2626 3px,
+        white 3px,
+        white 4px,
+        #dc2626 4px,
+        #dc2626 7px,
+        white 7px,
+        white 8px
+      );
+    }
+
+    &.in-range {
+      background: #8BC34A; // Green
+    }
+
+    &.high {
+      background: #f59e0b; // Orange with stripes
+      background-image: repeating-linear-gradient(
+          135deg,
+        #f59e0b 0px,
+        #f59e0b 3px,
+        white 3px,
+        white 4px,
+        #f59e0b 4px,
+        #f59e0b 7px,
+        white 7px,
+        white 8px
+      );
+    }
+
+    &.very-high {
+      background: #eab308; // Yellow/Gold
+    }
+  }
+
+  .scale-container {
+    width: 200px;
+    margin-top: 20px;
+
+    .horizontal-scale-bar {
+      display: flex;
+      height: 12px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      gap: 2px; // Add white space between segments
+
+      .scale-segment {
+        height: 100%;
+        
+        &.very-low-scale {
+          flex: 1; // Equal flex
+          background: #dc2626;
+        }
+        
+        &.low-scale {
+          flex: 1; // Equal flex
+          background: #dc2626;
+          background-image: repeating-linear-gradient(
+            45deg,
+            #dc2626 0px,
+            #dc2626 3px,
+            white 3px,
+            white 4px,
+            #dc2626 4px,
+            #dc2626 7px,
+            white 7px,
+            white 8px
+          );
+        }
+        
+        &.in-range-scale {
+          flex: 1; // Equal flex
+          background: #8BC34A;
+        }
+        
+        &.high-scale {
+          flex: 1; // Equal flex
+          background: #f59e0b;
+          background-image: repeating-linear-gradient(
+            135deg,
+            #f59e0b 0px,
+            #f59e0b 3px,
+            white 3px,
+            white 4px,
+            #f59e0b 4px,
+            #f59e0b 7px,
+            white 7px,
+            white 8px
+          );
+        }
+        
+        &.very-high-scale {
+          flex: 1; // Equal flex
+          background: #eab308;
+        }
+      }
+    }
+
+    .scale-markers {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .scale-label {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+  }
+}
+
+/* GMI Section */
+.gmi-section {
+  background: white;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 550px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  h3 {
+    margin: 0 0 20px 0;
+    color: #5b6b8a;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .gmi-content {
+ 
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .gmi-average {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .average-label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .average-value {
+      font-size: 32px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+
+  .gmi-chart-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: visible;
+    max-width: 100%;
+    padding: 5px 10px;
+    margin-top: -20px;
+  }
+
+  .gmi-scale {
+    margin-top: -100px;
+    width: 200px;
+
+    .scale-bar {
+      height: 12px;
+      display: flex;
+      overflow: hidden;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      gap: 2px; // Add white space between segments
+
+      .scale-section {
+        height: 100%;
+
+        &.gmi-green {
+          background: #8BC34A;
+        }
+
+        &.gmi-yellow {
+          background: #FFEB3B;
+        }
+
+        &.gmi-red {
+          background: #F44336;
+        }
+
+        // Legacy support for old class names
+        &.green {
+          background: #8BC34A;
+        }
+
+        &.orange {
+          background: #FFEB3B;
+        }
+
+        &.red {
+          background: #F44336;
+        }
+      }
+    }
+
+    .scale-markers {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 500;
+
+      .scale-marker {
+        font-weight: 500;
+        position: relative;
+      }
+    }
+
+    .scale-label {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+  }
+}
+
+// Override ngx-charts styles
+::ng-deep {
+  .gmi-section {
+    .ngx-charts .pie-arc,
+    .pie-series .pie-arc,
+    .pie-chart .pie-arc {
+      stroke-width: 2 !important;
+      stroke: white !important;
+
+      &:first-child {
+        fill: #8BC34A !important;
+      }
+
+      &:nth-child(2) {
+        fill: #FFEB3B !important;
+      }
+
+      &:last-child {
+        fill: #F44336 !important;
+      }
+    }
+  }
+
+  .ngx-charts {
+    .pie-label {
+      font-size: 14px;
+      font-weight: 600;
+      fill: #333;
+      text-anchor: middle;
+    }
+
+    .pie-label-line {
+      stroke: #999;
+      stroke-width: 1;
+    }
+
+    .tooltip-anchor {
+      fill: none;
+    }
+
+    .chart-legend {
+      display: none;
+    }
+
+    .pie-series .pie-label {
+      font-size: 14px;
+      font-weight: 600;
+      fill: #333;
+    }
+  }
+}
